@@ -5,6 +5,7 @@
             [sablono.util :as util]))
 
 (def ^:dynamic *update-attrs* identity)
+(def ^:dynamic *normalize-log* identity)
 
 (defn compact-map
   "Removes all map entries where the value of the entry is empty."
@@ -60,6 +61,7 @@
 (defn attributes
   "Normalize the `attrs` of an element."
   [attrs]
+  (when *normalize-log* (*normalize-log* "attributes" attrs))
   (cond-> attrs
     (:class attrs)
     (update-in [:class] class)))
@@ -121,12 +123,13 @@
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
+  (when *normalize-log* (*normalize-log* "element" tag content))
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
-        map-attrs (first content)
-        map-attrs (if (map? map-attrs) (*update-attrs* map-attrs) map-attrs)]
+        map-attrs (cond-> (first content)
+                          (map? (first content)) (*update-attrs*))]
 
     (if (map? map-attrs)
       [tag
