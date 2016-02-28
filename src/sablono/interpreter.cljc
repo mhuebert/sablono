@@ -88,7 +88,7 @@
        (apply create-element type (attributes attrs) (map interpret content)))))
 
 (defn- interpret-seq [s]
-  (map interpret s))
+  (doall (map interpret s)))
 
 #?(:cljs
    (extend-protocol IInterpreter
