@@ -60,7 +60,6 @@
 (defn attributes
   "Normalize the `attrs` of an element."
   [attrs]
-  (when *normalize-log* (*normalize-log* "attributes" attrs))
   (cond-> attrs
           *update-attrs* *update-attrs*
           (:class attrs) (update-in [:class] class)))
@@ -122,13 +121,11 @@
 (defn element
   "Ensure an element vector is of the form [tag-name attrs content]."
   [[tag & content]]
-  (when *normalize-log* (*normalize-log* "element" tag content))
   (when (not (or (keyword? tag) (symbol? tag) (string? tag)))
     (throw (ex-info (str tag " is not a valid element name.") {:tag tag :content content})))
   (let [[tag id class] (match-tag tag)
         tag-attrs (compact-map {:id id :class class})
-        map-attrs (cond-> (first content)
-                          (map? (first content)) (*update-attrs*))]
+        map-attrs (first content)]
 
     (if (map? map-attrs)
       [tag
