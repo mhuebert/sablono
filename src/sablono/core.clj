@@ -1,6 +1,7 @@
 (ns sablono.core
   (:require [clojure.walk :refer [postwalk-replace]]
-            [sablono.compiler :as compiler]))
+            [sablono.compiler :as compiler]
+            [sablono.normalize]))
 
 (defmacro attrs
   "Compile `attributes` map into a JavaScript literal."
@@ -34,6 +35,13 @@
   html macro."
   [base-url & body]
   `(binding [sablono.util/*base-url* ~base-url]
+     ~@body))
+
+(defmacro with-attr-update
+  "Sets an attribute update function which will be applied to attribute maps
+  during compilation. Should be placed outside the html macro."
+  [f & body]
+  `(binding [sablono.normalize/*update-attrs* ~f]
      ~@body))
 
 (defmacro defelem

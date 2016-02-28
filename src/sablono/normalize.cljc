@@ -4,8 +4,7 @@
             [clojure.string :as str]
             [sablono.util :as util]))
 
-(def ^:dynamic *update-attrs* identity)
-(def ^:dynamic *normalize-log* identity)
+(def ^:dynamic *update-attrs* nil)
 
 (defn compact-map
   "Removes all map entries where the value of the entry is empty."
@@ -63,8 +62,8 @@
   [attrs]
   (when *normalize-log* (*normalize-log* "attributes" attrs))
   (cond-> attrs
-    (:class attrs)
-    (update-in [:class] class)))
+          *update-attrs* *update-attrs*
+          (:class attrs) (update-in [:class] class)))
 
 (defn merge-with-class
   "Like clojure.core/merge but concatenate :class entries."
