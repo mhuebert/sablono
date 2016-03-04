@@ -12,3 +12,5 @@ pom.xml.asc
 /docs/uberdoc.html
 /.repl-*
 /figwheel_server.log
+sablono.iml
+.idea/
